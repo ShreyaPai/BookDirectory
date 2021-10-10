@@ -23,10 +23,46 @@ exports.addBook = async (req, res, next) => {
         error.statusCode = 500;
       }
       console.log(error)
-      // since, we are inside async block, throwing error will not work
       next(error);
     
     }
     
 };
 
+exports.getAllBooks = async (req, res, next) => {
+  try {
+    const books = await Book.find();
+    res.status(200).json({
+      message: 'List of Books',
+      books: books
+    })
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    console.log(error)
+    next(error);
+  }
+}
+
+exports.getBook = async (req, res, next) => {
+  const bookId = req.params.bookId;
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) {
+      const err = new Error('Book Not Found');
+      const status = '404';
+      throw err;
+    }
+    res.status(200).json({
+      message: 'Book Found',
+      book: book
+    })
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    console.log(error)
+    next(error);
+  }
+}
